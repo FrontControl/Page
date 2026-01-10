@@ -82,8 +82,9 @@ body {
   color: #fff;
 }
 
-.navbar h2 {
-  font-size: 24px;
+.navbar .profile span {
+  font-weight: bold;
+  font-size: 16px;
 }
 
 .navbar button {

@@ -52,20 +52,44 @@ function handleLogout(event) {
   window.location.href = "index.html";
 }
 
-document.getElementById("send-money-form").addEventListener("submit", function(e) {
-  e.preventDefault(); // prevent form from reloading page
+document.addEventListener("DOMContentLoaded", () => {
+  const sendForm = document.getElementById("send-money-form");
+
+  if (sendForm) sendForm.addEventListener("submit", handleSendMoney);
+});
+
+function handleSendMoney(event) {
+  event.preventDefault();
 
   const bank = document.getElementById("bank").value;
-  const account = document.getElementById("account").value;
-  const recipient = document.getElementById("recipient").value;
+  const account = document.getElementById("account").value.trim();
+  const recipient = document.getElementById("recipient").value.trim();
   const amount = document.getElementById("amount").value;
-  const note = document.getElementById("note").value;
+  const note = document.getElementById("note").value.trim();
+  const msgEl = document.getElementById("send-message");
+  const sendBtn = document.getElementById("send-btn");
+
+  // Reset previous message
+  msgEl.style.display = "none";
 
   if (!bank || !account || !recipient || !amount) {
-    alert("Please fill all required fields!");
+    msgEl.textContent = "❌ Please fill all required fields!";
+    msgEl.className = "message error";
+    msgEl.style.display = "flex";
     return;
   }
 
-  alert(`Successfully sent $${amount} to ${recipient} (${bank})`);
-  this.reset(); // clear form
-});
+  // Simulate sending
+  sendBtn.disabled = true;
+  sendBtn.textContent = "Sending...";
+
+  setTimeout(() => {
+    msgEl.innerHTML = `✅ Successfully sent $${amount} to ${recipient} (${bank})`;
+    msgEl.className = "message success";
+    msgEl.style.display = "flex";
+
+    sendForm.reset();
+    sendBtn.disabled = false;
+    sendBtn.textContent = "Send Money";
+  }, 1200);
+}

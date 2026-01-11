@@ -105,57 +105,91 @@
 
   <script src="script.js"></script>
  
-<script>
-  // Prepare data for chart
-const transactionData = JSON.parse(localStorage.getItem("transactions")) || [];
+  <script>
+  // Check if transactions exist, otherwise use sample data
+  let transactionData = JSON.parse(localStorage.getItem("transactions")) || [];
 
-// Aggregate spending by category or note
-const spendingSummary = {};
-
-// We'll use 'note' or 'Others' as categories
-transactionData.forEach(tx => {
-  if (tx.type === "expense") {
-    // Extract a category from the text (simple approach)
-    const parts = tx.text.split("—"); // split note if exists
-    const category = parts[1] ? parts[1].trim() : "Others";
-    const amount = parseFloat(tx.amount.replace(/[$,-]/g, ""));
-    if (spendingSummary[category]) {
-      spendingSummary[category] += amount;
-    } else {
-      spendingSummary[category] = amount;
-    }
+  // If no transactions, add demo data (for first-time view)
+  if (transactionData.length === 0) {
+    transactionData = [
+      { type: "expense", text: "Amazon — Shopping", amount: "$120" },
+      { type: "expense", text: "Uber — Transport", amount: "$50" },
+      { type: "expense", text: "Starbucks — Coffee", amount: "$20" },
+      { type: "expense", text: "Netflix — Entertainment", amount: "$15" },
+      { type: "expense", text: "Rent — Housing", amount: "$500" }
+    ];
+    localStorage.setItem("transactions", JSON.stringify(transactionData));
   }
-});
 
-// Prepare data for Chart.js
-const labels = Object.keys(spendingSummary);
-const data = Object.values(spendingSummary);
+  // Aggregate spending by category (using 'note' after '—' or default 'Others')
+  const spendingSummary = {};
+  transactionData.forEach(tx => {
+    if (tx.type === "expense") {
+      const parts = tx.text.split("—");
+      const category = parts[1] ? parts[1].trim() : "Others";
+      const amount = parseFloat(tx.amount.replace(/[$,]/g, ""));
+      spendingSummary[category] = (spendingSummary[category] || 0) + amount;
+    }
+  });
 
-const ctx = document.getElementById('spendingChart').getContext('2d');
-new Chart(ctx, {
-  type: 'bar',
-  data: {
-    labels: labels,
-    datasets: [{
-      label: 'Expenses ($)',
-      data: data,
-      backgroundColor: 'rgba(0, 123, 255, 0.6)',
-      borderColor: 'rgba(0, 123, 255, 1)',
-      borderWidth: 1
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false }
+  // Prepare Chart.js data
+  const labels = Object.keys(spendingSummary);
+  const data = Object.values(spendingSummary);
+
+  // Optional: generate a color for each bar dynamically
+  const colors = labels.map(() => `rgba(${Math.floor(Math.random()*155 + 50)}, 123, 255, 0.7)`);
+
+  // Create chart
+  const ctx = document.getElementById('spendingChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Expenses ($)',
+        data: data,
+        backgroundColor: colors,
+        borderColor: colors.map(c => c.replace("0.7", "1")),
+        borderWidth: 1
+      }]
     },
-    scales: {
-      y: { beginAtZero: true },
-      x: { ticks: { color: '#333' } }
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return `$${context.raw.toLocaleString()}`;
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: '#333',
+            callback: function(value) {
+              return `$${value.toLocaleString()}`;
+            }
+          },
+          grid: {
+            color: 'rgba(0,0,0,0.05)'
+          }
+        },
+        x: {
+          ticks: { color: '#333' },
+          grid: { display: false }
+        }
+      },
+      animation: {
+        duration: 1000,
+        easing: 'easeOutQuart'
+      }
     }
-  }
-});
+  });
 </script>
 
 <footer class="login-footer">

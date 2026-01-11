@@ -35,19 +35,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const balanceEl = document.querySelector(".balance");
   const transactionsList = document.querySelector(".transactions-card ul");
 
-// 1️⃣ Read balance from HTML
-let totalBalance = balanceEl 
-    ? parseFloat(balanceEl.textContent.replace(/[$,]/g, "")) 
-    : 0;
+// Step 1: Check localStorage first
+let totalBalance = parseFloat(localStorage.getItem("totalBalance"));
 
-// 2️⃣ Optional: overwrite localStorage so HTML value becomes main balance
-localStorage.setItem("totalBalance", totalBalance);
+// Step 2: If nothing saved, use HTML value
+if (!totalBalance) {
+  totalBalance = balanceEl ? parseFloat(balanceEl.textContent.replace(/[$,]/g, "")) : 0;
+}
 
-// 3️⃣ Update balance display
-balanceEl && (balanceEl.textContent = "$" + totalBalance.toLocaleString(undefined, { 
-    minimumFractionDigits: 2, 
-    maximumFractionDigits: 2 
-}));
+// Step 3: Show the balance on the page
+balanceEl.textContent = "$" + totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   const savedTransactions = JSON.parse(localStorage.getItem("transactions")) || [];
   if (transactionsList) {

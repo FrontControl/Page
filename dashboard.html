@@ -110,57 +110,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script src="script.js"></script>
- 
-  <script>
-  // Sample transactions if none exist
-  let transactionData = JSON.parse(localStorage.getItem("transactions")) || [];
-  if (transactionData.length === 0) {
-    transactionData = [
-      { type: "expense", text: "Amazon — Shopping", amount: "$120", date: "2026-01-10" },
-      { type: "expense", text: "Uber — Transport", amount: "$50", date: "2026-01-12" },
-      { type: "expense", text: "Starbucks — Coffee", amount: "$20", date: "2026-02-05" },
-      { type: "expense", text: "Netflix — Entertainment", amount: "$15", date: "2026-02-20" },
-      { type: "expense", text: "Rent — Housing", amount: "$500", date: "2026-03-01" }
-    ];
-    localStorage.setItem("transactions", JSON.stringify(transactionData));
-  }
-
-  // Prepare monthly totals
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  let monthlyExpenses = Array(12).fill(0);
-  let monthlyIncome = Array(12).fill(0);
-
-  transactionData.forEach(tx => {
-    const txDate = tx.date ? new Date(tx.date) : new Date();
-    const monthIndex = txDate.getMonth();
-    const amount = parseFloat(tx.amount.replace(/[$,]/g,"")) || 0;
-    
-    if (tx.type === "expense") monthlyExpenses[monthIndex] += amount;
-    if (tx.type === "income") monthlyIncome[monthIndex] += amount;
-  });
-
-  // Create chart
-  const ctx = document.getElementById('spendingChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: months,
-      datasets: [
-        { label: "Expenses", data: monthlyExpenses, backgroundColor: "rgba(217, 69, 69, 0.7)", borderRadius: 6 },
-        { label: "Income", data: monthlyIncome, backgroundColor: "rgba(26, 154, 58, 0.7)", borderRadius: 6 }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { position: "top" }, tooltip: { mode: "index", intersect: false } },
-      scales: {
-        x: { stacked: false, ticks: { color: '#333' } },
-        y: { stacked: false, beginAtZero: true, ticks: { callback: v => `$${v.toLocaleString()}`, color: '#333' }, grid: { color: 'rgba(0,0,0,0.05)' } }
-      }
-    }
-  });
-</script>
       
 <footer class="login-footer">
   <div class="footer-links">

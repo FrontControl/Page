@@ -35,40 +35,41 @@ document.addEventListener("DOMContentLoaded", () => {
   const balanceEl = document.querySelector(".balance");
   const transactionsList = document.querySelector(".transactions-card ul");
 
+  // --------------------------
+  // ===== BALANCE TOGGLE =====
+  // --------------------------
   const eyeOpen = document.getElementById("eye-open");
   const eyeClosed = document.getElementById("eye-closed");
-  const toggleBtn = document.getElementById("toggle-balance");
+  const toggleBalanceBtn = document.getElementById("toggle-balance");
   const sensitiveBalances = document.querySelectorAll(".sensitive");
 
+  if (toggleBalanceBtn && sensitiveBalances.length > 0 && eyeOpen && eyeClosed) {
   let visible = true;
-
-  // store original values
   const originalValues = [];
-  sensitiveBalances.forEach(el => {
-  originalValues.push(el.textContent);
-});
+  sensitiveBalances.forEach(el => originalValues.push(el.textContent));
 
-toggleBtn.addEventListener("click", () => {
-  sensitiveBalances.forEach((el, index) => {
+  toggleBalanceBtn.addEventListener("click", () => {
+    sensitiveBalances.forEach((el, index) => {
+      if (visible) {
+        el.textContent = "••••••"; // hide
+        el.classList.add("hidden");
+      } else {
+        el.textContent = originalValues[index]; // show
+        el.classList.remove("hidden");
+      }
+    });
+
+    // Toggle eye icon
     if (visible) {
-      el.textContent = "••••••";
-      el.classList.add("hidden");
+      eyeOpen.style.display = "none";
+      eyeClosed.style.display = "block";
     } else {
-      el.textContent = originalValues[index];
-      el.classList.remove("hidden");
+      eyeOpen.style.display = "block";
+      eyeClosed.style.display = "none";
     }
-  });
 
-  if (visible) {
-  eyeOpen.style.display = "none";
-  eyeClosed.style.display = "block";
-} else {
-  eyeOpen.style.display = "block";
-  eyeClosed.style.display = "none";
-}
-  
-  visible = !visible;
-});
+    visible = !visible;
+  });
 }
 
 // Step 1: Check localStorage first

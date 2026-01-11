@@ -365,3 +365,7 @@ canvas#spendingChart { width: 100% !important; height: 200px !important; }
 #toggle-balance svg {
   display: block;
 }
+
+#eye-open, #eye-closed {
+  transition: opacity 0.2s ease;
+}

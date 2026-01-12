@@ -289,97 +289,47 @@ if (logoutBtn) logoutBtn.addEventListener("click", () => {
 
 });
 
-document.addEventListener("DOMContentLoaded", () => {
+   document.addEventListener("DOMContentLoaded", () => {
 
-  // PROFILE PANEL
   const profileBtn = document.getElementById("profile-btn");
   const profilePanel = document.getElementById("profile-panel");
   const closeProfileBtn = document.getElementById("close-profile");
   const editProfileBtn = document.getElementById("edit-profile");
   const accountSettingsBtn = document.getElementById("account-settings");
 
-  // Toggle profile panel
-  if (profileBtn && profilePanel) {
-    profileBtn.addEventListener("click", () => {
-      profilePanel.style.display = profilePanel.style.display === "block" ? "none" : "block";
-    });
-  }
+  if (!profilePanel || !profileBtn) return; // safety check
 
-  // Close profile panel
+  // Toggle profile panel
+  profileBtn.addEventListener("click", (e) => {
+    e.stopPropagation(); // prevent document click
+    profilePanel.style.display = profilePanel.style.display === "block" ? "none" : "block";
+  });
+
+  // Close panel button
   if (closeProfileBtn) {
     closeProfileBtn.addEventListener("click", () => {
       profilePanel.style.display = "none";
     });
   }
 
-  // Close when clicking outside panel
+  // Click outside panel to close
   document.addEventListener("click", (e) => {
-    if (
-      profilePanel.style.display === "block" &&
-      !profilePanel.contains(e.target) &&
-      !profileBtn.contains(e.target)
-    ) {
+    if (profilePanel.style.display === "block" && !profilePanel.contains(e.target) && !profileBtn.contains(e.target)) {
       profilePanel.style.display = "none";
     }
   });
 
-  // ===== LINK BUTTONS TO PAGES =====
+  // Redirect buttons
   if (editProfileBtn) {
     editProfileBtn.addEventListener("click", () => {
-      window.location.href = "profile.html";
+      window.location.href = "profile.html"; // make sure this page exists
     });
   }
 
   if (accountSettingsBtn) {
     accountSettingsBtn.addEventListener("click", () => {
-      window.location.href = "account.html";
+      window.location.href = "account.html"; // make sure this page exists
     });
   }
 
 });
-
-  // ===== PROFILE PANEL & BUTTON ACTIONS =====
-const profileBtn = document.getElementById("profile-btn");
-const profilePanel = document.getElementById("profile-panel");
-const closeProfileBtn = document.getElementById("close-profile");
-const editProfileBtn = document.getElementById("edit-profile");
-const accountSettingsBtn = document.getElementById("account-settings");
-
-// Toggle profile panel
-if (profileBtn && profilePanel) {
-  profileBtn.addEventListener("click", () => {
-    profilePanel.style.display = profilePanel.style.display === "block" ? "none" : "block";
-  });
-}
-
-// Close panel
-if (closeProfileBtn) {
-  closeProfileBtn.addEventListener("click", () => {
-    profilePanel.style.display = "none";
-  });
-}
-
-// Click outside to close
-document.addEventListener("click", (e) => {
-  if (
-    profilePanel &&
-    profilePanel.style.display === "block" &&
-    !profilePanel.contains(e.target) &&
-    !profileBtn.contains(e.target)
-  ) {
-    profilePanel.style.display = "none";
-  }
-});
-
-// Redirect buttons
-if (editProfileBtn) {
-  editProfileBtn.addEventListener("click", () => {
-    window.location.href = "profile.html"; // make sure this page exists
-  });
-}
-
-if (accountSettingsBtn) {
-  accountSettingsBtn.addEventListener("click", () => {
-    window.location.href = "account.html"; // make sure this page exists
-  });
-}

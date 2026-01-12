@@ -215,36 +215,33 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-   const quickBtns = document.querySelectorAll('.quick-btn');
-   const payBillCard = document.querySelector('.pay-bill-card');
-   const requestMoneyCard = document.querySelector('.request-money-card');
+  const quickBtns = document.querySelectorAll('.quick-btn');
+const payBillCard = document.querySelector('.pay-bill-card');
+const requestMoneyCard = document.querySelector('.request-money-card');
 
-    quickBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
+quickBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
     const action = btn.dataset.action;
 
-    // Ignore send-money (handled elsewhere)
     if (action === 'send-money') return;
 
-    // Get current visibility
-    const payVisible = payBillCard.style.display === 'block';
-    const requestVisible = requestMoneyCard.style.display === 'block';
-
+    // Toggle Pay Bill
     if (action === 'pay-bill') {
-      // Toggle pay bill
-      payBillCard.style.display = !payVisible ? 'block' : 'none';
-      // Always hide the other form
-      requestMoneyCard.style.display = 'none';
-    } else if (action === 'request-money') {
-      // Toggle request money
-      requestMoneyCard.style.display = !requestVisible ? 'block' : 'none';
-      // Always hide the other form
-      payBillCard.style.display = 'none';
+      payBillCard.classList.toggle('open');        // slide toggle
+      requestMoneyCard.classList.remove('open');   // close other form
     }
 
-    // Hide Send Money form if open
-    if (sendForm) sendForm.style.display = 'none';
-    if (toggleTransferBtn) toggleTransferBtn.textContent = "Transfer Funds";
+    // Toggle Request Money
+    if (action === 'request-money') {
+      requestMoneyCard.classList.toggle('open');   // slide toggle
+      payBillCard.classList.remove('open');        // close other form
+    }
+
+    // Hide Send Money if open
+    if (sendForm) {
+      sendForm.style.display = 'none';
+      if (toggleTransferBtn) toggleTransferBtn.textContent = "Transfer Funds";
+    }
   });
 });
 

@@ -100,12 +100,12 @@
 <script>
   // ===== Demo Account Data =====
   const demoAccount = {
-    accountNumber: "123456789012",
-    balance: 5200.50,
-    dailyLimit: 2000,
+    accountNumber: "08068648488",
+    balance: 1,500,450.50,
+    dailyLimit: 40000,
     linkedAccounts: [
-      { bank: "Bank of Nigeria", number: "5678" },
-      { bank: "Global Bank", number: "9012" }
+      { bank: "Bank of America", number: "5678" },
+      { bank: "Chase Bank", number: "9012" }
     ],
     txnEmailAlerts: true,
     txnSMSAlerts: false
@@ -121,7 +121,7 @@
     showAccount = !showAccount;
     accountNumberEl.textContent = showAccount 
       ? demoAccount.accountNumber.replace(/(\d{4})(?=\d)/g, "$1 ") 
-      : "**** **** 1234";
+      : "**** **** 8488";
     accountBalanceEl.textContent = showAccount 
       ? "$" + demoAccount.balance.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})
       : "$••••••";

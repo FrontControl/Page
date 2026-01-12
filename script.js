@@ -224,8 +224,10 @@ quickBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     const action = btn.dataset.action;
 
-    // Only handle pay-bill and request-money here
-    if (action === 'pay-bill' || action === 'request-money') {
+      // Only handle pay-bill and request-money here
+      if (action === 'pay-bill' || action === 'request-money') {
+      if (sendForm) sendForm.style.display = "none";
+      if (toggleTransferBtn) toggleTransferBtn.textContent = "Transfer Funds";
       // Hide both forms first
       payBillCard.style.display = 'none';
       requestMoneyCard.style.display = 'none';

@@ -1,16 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
-
-   let savedTransactions = JSON.parse(localStorage.getItem("transactions"));
-
+  // ===== INITIAL TRANSACTIONS =====
+  let savedTransactions = JSON.parse(localStorage.getItem("transactions"));
   if (!savedTransactions || savedTransactions.length === 0) {
-  savedTransactions = [
-    { type: "expense", text: "Netflix — Entertainment", amount: "$150", date: "2026-01-05" },
-    { type: "income", text: "Salary — Deposit", amount: "$69000", date: "2026-01-09" },
-  ];
-  localStorage.setItem("transactions", JSON.stringify(savedTransactions));
-}
-  
-  // ===== 2️⃣ LOGIN HANDLER =====
+    savedTransactions = [
+      { type: "expense", text: "Netflix — Entertainment", amount: "$150", date: "2026-01-05" },
+      { type: "income", text: "Salary — Deposit", amount: "$69000", date: "2026-01-09" },
+    ];
+    localStorage.setItem("transactions", JSON.stringify(savedTransactions));
+  }
+
+  // ===== LOGIN HANDLER =====
   const loginForm = document.getElementById("login-form");
   if (loginForm) {
     const messageEl = document.getElementById("login-message");
@@ -41,21 +40,19 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 1500);
     });
   }
-  
-   // ===== DASHBOARD =====
+
+  // ===== DASHBOARD ELEMENTS =====
   const sendForm = document.getElementById("send-money-form");
   const toggleTransferBtn = document.getElementById("toggle-transfer-btn");
   const balanceEl = document.querySelector(".balance");
   const transactionsList = document.querySelector(".transactions-card ul");
 
-  // Balance
+  // ===== BALANCE =====
   let totalBalance = parseFloat(localStorage.getItem("totalBalance"));
-  if (!totalBalance) {
-    totalBalance = balanceEl ? parseFloat(balanceEl.textContent.replace(/[$,]/g, "")) : 0;
-  }
+  if (!totalBalance) totalBalance = balanceEl ? parseFloat(balanceEl.textContent.replace(/[$,]/g, "")) : 0;
   if (balanceEl) balanceEl.textContent = "$" + totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-  // Transactions
+  // ===== RENDER TRANSACTIONS =====
   if (transactionsList) {
     savedTransactions.forEach(tx => {
       const li = document.createElement("li");
@@ -65,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ===== MONTHLY SPENDING CHART (safe) =====
+  // ===== MONTHLY CHART =====
   try {
     const spendingCanvas = document.getElementById("spendingChart");
     if (spendingCanvas) {
@@ -76,13 +73,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       savedTransactions.forEach(tx => {
         try {
-          const today = new Date();
-          const txDate = tx.date ? new Date(tx.date) : today;
+          const txDate = tx.date ? new Date(tx.date) : new Date();
           const monthIndex = txDate.getMonth();
-
           const expense = parseFloat(tx.amount.replace(/[-$,]/g,""));
           if (tx.type === "expense" && !isNaN(expense)) monthlyExpenses[monthIndex] += expense;
-
           const income = parseFloat(tx.amount.replace(/[$,]/g,""));
           if (tx.type === "income" && !isNaN(income)) monthlyIncome[monthIndex] += income;
         } catch(e) {
@@ -103,10 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
           responsive: true,
           maintainAspectRatio: false,
           plugins: { legend: { position: "top" }, tooltip: { mode: "index", intersect: false } },
-          scales: {
-            x: { stacked: false },
-            y: { stacked: false, beginAtZero: true, ticks: { callback: v => "$" + v.toLocaleString() } }
-          }
+          scales: { x: { stacked: false }, y: { stacked: false, beginAtZero: true, ticks: { callback: v => "$" + v.toLocaleString() } } }
         }
       });
     }
@@ -143,7 +134,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const confirmBtn = document.getElementById("confirmPinBtn");
   const cancelBtn = document.getElementById("cancelPinBtn");
   const correctPin = "2027";
-
   cancelBtn.onclick = () => pinModal.style.display = "none";
 
   // ===== SEND MONEY =====
@@ -226,18 +216,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ===== LOGOUT =====
   const logoutBtn = document.getElementById("logout-btn");
-if (logoutBtn) logoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("loggedIn"); // clear login flag
-  window.location.href = "index.html";  // go back to login page
-});
-   
+  if (logoutBtn) logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("loggedIn");
+    window.location.href = "index.html";
+  });
+
   // ===== BALANCE TOGGLE =====
   const balanceToggleBtn = document.getElementById("toggle-balance");
   const sensitiveBalances = document.querySelectorAll(".sensitive");
   let visible = true;
   const originalValues = [];
   sensitiveBalances.forEach(el => originalValues.push(el.textContent));
-
   if (balanceToggleBtn) balanceToggleBtn.addEventListener("click", () => {
     sensitiveBalances.forEach((el, index) => {
       el.textContent = visible ? "••••••" : originalValues[index];
@@ -247,68 +236,42 @@ if (logoutBtn) logoutBtn.addEventListener("click", () => {
     visible = !visible;
   });
 
-   document.querySelectorAll(".quick-btn").forEach(btn => {
-  btn.addEventListener("click", (e) => {
-    const action = e.currentTarget.dataset.action;
-
-    if(action === "pay-bill") {
-      alert("Redirecting to Pay Bill form...");
-      // or open your modal: showModal('payBillModal');
-    } 
-    else if(action === "send-money") {
-      // show your existing send money form
-      const sendForm = document.getElementById("send-money-form");
-      const toggleBtn = document.getElementById("toggle-transfer-btn");
-      sendForm.style.display = "block";
-      toggleBtn.textContent = "Hide Transfer Form";
-      sendForm.scrollIntoView({behavior: "smooth"});
-    } 
-    else if(action === "request-money") {
-      alert("Redirecting to Request Money form...");
-      // implement your Request Money modal/form
-    }
+  // ===== QUICK BUTTONS =====
+  document.querySelectorAll(".quick-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const action = e.currentTarget.dataset.action;
+      if(action === "pay-bill") alert("Redirecting to Pay Bill form...");
+      else if(action === "send-money") {
+        sendForm.style.display = "block";
+        toggleTransferBtn.textContent = "Hide Transfer Form";
+        sendForm.scrollIntoView({behavior: "smooth"});
+      } 
+      else if(action === "request-money") alert("Redirecting to Request Money form...");
+    });
   });
-});
 
-    document.addEventListener("DOMContentLoaded", () => {
+  // ===== PROFILE PANEL =====
   const profileBtn = document.getElementById("profile-btn");
   const profilePanel = document.getElementById("profile-panel");
   const closeProfileBtn = document.getElementById("close-profile");
   const editProfileBtn = document.getElementById("edit-profile");
   const accountSettingsBtn = document.getElementById("account-settings");
 
-  if (!profilePanel || !profileBtn) return; // safety check
-
-  // Toggle profile panel
-  profileBtn.addEventListener("click", (e) => {
-    e.stopPropagation(); // prevent document click from immediately closing
-    profilePanel.style.display = profilePanel.style.display === "block" ? "none" : "block";
-  });
-
-  // Close panel button
-  if (closeProfileBtn) {
-    closeProfileBtn.addEventListener("click", () => {
-      profilePanel.style.display = "none";
+  if (profileBtn && profilePanel) {
+    profileBtn.addEventListener("click", e => {
+      e.stopPropagation();
+      profilePanel.style.display = profilePanel.style.display === "block" ? "none" : "block";
     });
   }
 
-  // Close when clicking outside panel
-  document.addEventListener("click", (e) => {
-    if (profilePanel.style.display === "block" && !profilePanel.contains(e.target) && !profileBtn.contains(e.target)) {
+  if (closeProfileBtn) closeProfileBtn.addEventListener("click", () => profilePanel.style.display = "none");
+
+  document.addEventListener("click", e => {
+    if (profilePanel && profilePanel.style.display === "block" && !profilePanel.contains(e.target) && !profileBtn.contains(e.target)) {
       profilePanel.style.display = "none";
     }
   });
 
-  // Redirect buttons
-  if (editProfileBtn) {
-    editProfileBtn.addEventListener("click", () => {
-      window.location.href = "profile.html"; // ensure this page exists
-    });
-  }
-
-  if (accountSettingsBtn) {
-    accountSettingsBtn.addEventListener("click", () => {
-      window.location.href = "account.html"; // ensure this page exists
-    });
-  }
+  if (editProfileBtn) editProfileBtn.addEventListener("click", () => window.location.href = "profile.html");
+  if (accountSettingsBtn) accountSettingsBtn.addEventListener("click", () => window.location.href = "account.html");
 });

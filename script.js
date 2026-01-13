@@ -246,12 +246,11 @@ document.addEventListener("DOMContentLoaded", () => {
       sendForm.reset();
       sendBtn.disabled = false;
       sendBtn.textContent = originalText;
+      sendForm.style.display = "none";
+      toggleTransferBtn.textContent = "Transfer Funds";
     }, 4000);
   };
 });
-     sendForm.style.display = "none";
-     toggleTransferBtn.textContent = "Transfer Funds";
-
           
 // ===== Quick buttons & cards =====
 const quickBtns = document.querySelectorAll('.quick-btn');

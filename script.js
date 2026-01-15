@@ -375,26 +375,6 @@ if (payBillForm && balanceEl && transactionsList) {
     const amount = parseFloat(document.getElementById("bill-amount").value);
     if (!biller || isNaN(amount) || amount <= 0 || amount > totalBalance) return;
 
-    // Show PIN modal
-    pinModal.style.display = "flex";
-    pinInput.value = "";
-    pinMessage.textContent = "";
-    pinInput.focus();
-    let attemptsLeft = maxAttempts;
-
-    confirmBtn.onclick = () => {
-      const enteredPin = pinInput.value.trim();
-      if (enteredPin !== correctPin) {
-        attemptsLeft--;
-        pinMessage.textContent = attemptsLeft > 0 
-          ? `Incorrect PIN. ${attemptsLeft} attempt(s) remaining.` 
-          : "Maximum attempts reached. Try again later.";
-        if (attemptsLeft <= 0) setTimeout(() => pinModal.style.display = "none", 1000);
-        pinInput.value = "";
-        pinInput.focus();
-        return;
-      }
-
       // Correct PIN: process payment
       pinModal.style.display = "none";
       payBillForm.querySelector("button[type='submit']").disabled = true;
@@ -536,7 +516,7 @@ if (downloadReceiptBtn) {
   // ===== DOWNLOAD RECEIPT =====
    const downloadBtn = document.getElementById("download-receipt-btn");
 
-if (downloadBtn) {
+  if (downloadBtn) {
   downloadBtn.onclick = () => {
 
     // Close modal FIRST (important)

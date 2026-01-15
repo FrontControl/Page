@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
       email: "Charlesweahh@gmail.com",
       phone: "+1 510 367 1796",
       password: "1346000",
+      transferPin: "1234", // PIN for transfers and Pay Bill
       emailNotif: true,
       smsNotif: false
     };
@@ -73,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const sendForm = document.getElementById("send-money-form");
     const toggleTransferBtn = document.getElementById("toggle-transfer-btn");
     const transactionsList = document.querySelector(".transactions-card ul");
+    const payBillForm = document.getElementById("pay-bill-form");
 
     // Render Transactions
     if (transactionsList) {
@@ -130,41 +132,6 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "index.html";
     });
 
-    // ===== PASSWORD CHANGE =====
-    const passwordForm = document.getElementById("password-form");
-    if (passwordForm) {
-      const passwordMessage = document.getElementById("password-message");
-      passwordForm.addEventListener("submit", e => {
-        e.preventDefault();
-        const current = document.getElementById("currentPassword").value;
-        const newP = document.getElementById("newPassword").value;
-        const confirmP = document.getElementById("confirmPassword").value;
-
-        if (current !== demoUser.password) {
-          passwordMessage.textContent = "Current password is incorrect!";
-          passwordMessage.className = "error";
-          return;
-        }
-        if (newP.length < 6) {
-          passwordMessage.textContent = "New password must be at least 6 characters!";
-          passwordMessage.className = "error";
-          return;
-        }
-        if (newP !== confirmP) {
-          passwordMessage.textContent = "New passwords do not match!";
-          passwordMessage.className = "error";
-          return;
-        }
-
-        demoUser.password = newP;
-        localStorage.setItem("demoUser", JSON.stringify(demoUser));
-        passwordMessage.textContent = "Password changed successfully ✔";
-        passwordMessage.className = "success";
-
-        passwordForm.reset();
-      });
-    }
-
     // ===== TOGGLE TRANSFER FORM =====
     if (toggleTransferBtn && sendForm) {
       toggleTransferBtn.addEventListener("click", () => {
@@ -173,15 +140,15 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // ===== PIN MODAL & SEND MONEY =====
+    // ===== PIN MODAL =====
     const pinModal = document.createElement("div");
     pinModal.id = "pinModal";
     pinModal.style.cssText = "display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;justify-content:center;align-items:center;font-family:Arial,sans-serif;";
     pinModal.innerHTML = `
       <div style="background:#fff;padding:25px 30px;border-radius:15px;width:320px;text-align:center;box-shadow:0 10px 25px rgba(0,0,0,0.2);">
-        <h3 style="margin-bottom:15px;color:#333;">Enter Transfer PIN</h3>
-        <p style="color:#666;font-size:14px;margin-bottom:15px;">For security, enter your 4-digit transfer PIN.</p>
-        <input type="password" id="transferPin" placeholder="••••" style="width:80%;padding:10px;font-size:16px;border-radius:8px;border:1px solid #ccc;text-align:center;letter-spacing:5px;">
+        <h3 style="margin-bottom:15px;color:#333;">Enter PIN</h3>
+        <p style="color:#666;font-size:14px;margin-bottom:15px;">For security, enter your 4-digit PIN.</p>
+        <input type="password" id="transactionPin" placeholder="••••" style="width:80%;padding:10px;font-size:16px;border-radius:8px;border:1px solid #ccc;text-align:center;letter-spacing:5px;">
         <div style="margin-top:20px;">
           <button id="confirmPinBtn" style="padding:8px 20px;background:#007bff;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;">Confirm</button>
           <button id="cancelPinBtn" style="padding:8px 20px;background:#ccc;color:#333;border:none;border-radius:8px;cursor:pointer;font-size:14px;margin-left:10px;">Cancel</button>
@@ -191,8 +158,59 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     document.body.appendChild(pinModal);
 
-    // All send money, pay bill, request money, balance toggle, PDF download, quick buttons, profile panel, success modal
-    // Implemented exactly as your last full posted script
+    const confirmPinBtn = document.getElementById("confirmPinBtn");
+    const cancelPinBtn = document.getElementById("cancelPinBtn");
+    const transactionPinInput = document.getElementById("transactionPin");
+    const pinMessage = document.getElementById("pinMessage");
+
+    // ===== TRANSACTIONS: SEND MONEY + PAY BILL + REQUEST MONEY =====
+    function processTransaction(type, text, amount) {
+      // Deduct/add balance
+      let amtValue = parseFloat(amount);
+      if (type === "expense") totalBalance -= amtValue;
+      if (type === "income") totalBalance += amtValue;
+      localStorage.setItem("totalBalance", totalBalance);
+      if (balanceEl) balanceEl.textContent = "$" + totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      // Add to transactions list
+      const li = document.createElement("li");
+      li.classList.add(type);
+      li.innerHTML = `<span>${text}</span><span>${type === "expense" ? "-$" : "$"}${amtValue.toLocaleString()}</span>`;
+      transactionsList.insertBefore(li, transactionsList.firstChild);
+
+      // Show success modal
+      if (successModal) successModal.style.display = "flex";
+      document.getElementById("r-id").textContent = Math.floor(Math.random()*1000000);
+      document.getElementById("r-name").textContent = text;
+      document.getElementById("r-amount").textContent = amtValue.toFixed(2);
+      document.getElementById("r-date").textContent = new Date().toLocaleDateString();
+    }
+
+    // Open PIN modal on Pay Bill submit
+    if (payBillForm) {
+      payBillForm.addEventListener("submit", e => {
+        e.preventDefault();
+        pinModal.style.display = "flex";
+        pinMessage.textContent = "";
+        confirmPinBtn.onclick = () => {
+          if (transactionPinInput.value === demoUser.transferPin) {
+            const billText = document.getElementById("biller").value;
+            const billAmount = parseFloat(document.getElementById("bill-amount").value);
+            processTransaction("expense", billText, billAmount);
+            payBillForm.reset();
+            pinModal.style.display = "none";
+            transactionPinInput.value = "";
+          } else {
+            pinMessage.textContent = "Incorrect PIN!";
+          }
+        };
+        cancelPinBtn.onclick = () => {
+          pinModal.style.display = "none";
+          transactionPinInput.value = "";
+          pinMessage.textContent = "";
+        };
+      });
+    }
 
     // ===== BALANCE TOGGLE =====
     const balanceToggleBtn = document.getElementById("toggle-balance");
@@ -243,7 +261,37 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // All remaining dashboard features (request money, quick buttons, profile panel) are implemented as per your last full script
-  }
+    // ===== SMOOTH SCROLL FOR QUICK ACTIONS =====
+const quickButtons = document.querySelectorAll(".quick-btn");
 
+quickButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const action = btn.dataset.action;
+
+    if (action === "pay-bill") {
+      const payBillCard = document.querySelector(".pay-bill-card");
+      if (payBillCard) {
+        // Toggle visibility
+        payBillCard.style.display = payBillCard.style.display === "block" ? "none" : "block";
+        // Smooth scroll if opening
+        if (payBillCard.style.display === "block") payBillCard.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    if (action === "send-money") {
+      const sendCard = document.querySelector(".send-money-card");
+      if (sendCard) {
+        sendCard.style.display = sendCard.style.display === "block" ? "none" : "block";
+        if (sendCard.style.display === "block") sendCard.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    if (action === "request-money") {
+      const requestCard = document.querySelector(".request-money-card");
+      if (requestCard) {
+        requestCard.style.display = requestCard.style.display === "block" ? "none" : "block";
+        if (requestCard.style.display === "block") requestCard.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  });
 });

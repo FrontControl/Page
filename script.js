@@ -62,14 +62,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ===== AUTO REDIRECT IF LOGGED IN =====
+  // ===== AUTO REDIRECT IF ALREADY LOGGED IN =====
   if (localStorage.getItem("loggedIn") && window.location.pathname.endsWith("index.html")) {
     window.location.href = "dashboard.html";
   }
-   // ===== DASHBOARD ONLY =====
-if (window.location.pathname.endsWith("dashboard.html")) {
+
+
+  // ===== DASHBOARD PAGE ONLY =====
+  if (window.location.pathname.endsWith("dashboard.html")) {
   
-  }
   // ===== DASHBOARD ELEMENTS =====
   const sendForm = document.getElementById("send-money-form");
   const toggleTransferBtn = document.getElementById("toggle-transfer-btn");

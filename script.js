@@ -486,6 +486,34 @@ if (accountSettingsBtn) accountSettingsBtn.addEventListener("click", () => windo
     });
   }
 
+  // ===== SUCCESS MODAL CONTROLS =====
+const successModal = document.getElementById("success-modal");
+const closeSuccessBtn = document.getElementById("close-success");
+const downloadReceiptBtn = document.getElementById("download-receipt");
+
+if (closeSuccessBtn) {
+  closeSuccessBtn.addEventListener("click", () => {
+    successModal.style.display = "none";
+  });
+}
+
+// Optional: close modal when clicking outside
+if (successModal) {
+  successModal.addEventListener("click", e => {
+    if (e.target === successModal) {
+      successModal.style.display = "none";
+    }
+  });
+}
+
+// Ensure download does NOT break close button
+if (downloadReceiptBtn) {
+  downloadReceiptBtn.addEventListener("click", e => {
+    e.stopPropagation(); // VERY IMPORTANT
+    // your existing download logic stays
+  });
+}
+
   // ===== DOWNLOAD RECEIPT =====
    const downloadBtn = document.getElementById("download-receipt-btn");
 

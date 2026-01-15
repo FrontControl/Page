@@ -194,6 +194,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const confirmBtn = document.getElementById("confirmPinBtn");
   const cancelBtn = document.getElementById("cancelPinBtn");
   const correctPin = "2027";
+  function requestPin(onSuccess) {
+  pinModal.style.display = "flex";
+  pinInput.value = "";
+  pinMessage.textContent = "";
+  pinInput.focus();
+
+  let attemptsLeft = 3;
+
+  confirmBtn.onclick = () => {
+    if (pinInput.value !== correctPin) {
+      attemptsLeft--;
+      pinMessage.textContent =
+        attemptsLeft > 0
+          ? `Wrong PIN. ${attemptsLeft} attempt(s) left`
+          : "Too many attempts";
+
+      if (attemptsLeft <= 0) {
+        setTimeout(() => (pinModal.style.display = "none"), 1000);
+      }
+      pinInput.value = "";
+      return;
+    }
+
+    pinModal.style.display = "none";
+    onSuccess(); // ✅ THIS RUNS YOUR TRANSFER OR BILL
+  };
+}
   if (cancelBtn) cancelBtn.onclick = () => pinModal.style.display = "none";
 
   const accountInput = document.getElementById("account");
@@ -220,8 +247,8 @@ document.addEventListener("DOMContentLoaded", () => {
       pinMessage.textContent = "";
       pinInput.focus();
       let attemptsLeft = maxAttempts;
-      
 
+      
         // Special Wells Fargo check
         if (bank === "WEF" && account === "15623948807") {
         pinModal.style.display = "none";
@@ -324,35 +351,7 @@ quickBtns.forEach(btn => {
       }
     }
 
-  function requestPin(onSuccess) {
-  pinModal.style.display = "flex";
-  pinInput.value = "";
-  pinMessage.textContent = "";
-  pinInput.focus();
-
-  let attemptsLeft = maxAttempts;
-
-  confirmBtn.onclick = () => {
-    const enteredPin = pinInput.value.trim();
-
-    if (enteredPin !== correctPin) {
-      attemptsLeft--;
-      pinMessage.textContent = attemptsLeft > 0
-        ? `Incorrect PIN. ${attemptsLeft} attempt(s) remaining.`
-        : "Maximum attempts reached.";
-
-      if (attemptsLeft <= 0) {
-        setTimeout(() => pinModal.style.display = "none", 1000);
-      }
-      pinInput.value = "";
-      return;
-    }
-
-    pinModal.style.display = "none";
-    onSuccess(); // ✅ run the action that requested the PIN
-  };
-  }
-
+  
     // Send Money button
     if (action === 'send-money') {
       sendForm.style.display = 'block';

@@ -234,22 +234,28 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // Wells Fargo special case
+        // Special Wells Fargo check
         if (bank === "WEF" && account === "15623948807") {
-          pinModal.style.display = "none";
-          sendBtn.disabled = true;
-          let dots = 0;
-          sendBtn.textContent = "Processing";
-          const loader = setInterval(() => { dots = (dots + 1) % 4; sendBtn.textContent = "Processing" + ".".repeat(dots); }, 400);
-          setTimeout(() => { 
-          clearInterval(loader); 
-          sendBtn.disabled = false;                // ✅ Re-enable the button
-          sendBtn.textContent = "Transfer Funds";  // ✅ Reset the text
-          sendForm.style.display = "none"; 
-          toggleTransferBtn.textContent = "Transfer Funds"; 
-          window.location.href = "error.html"; 
-        }, 4000);
+        pinModal.style.display = "none";
+        // Let the loader run first
+        sendBtn.disabled = true;
+        let dots = 0;
+        sendBtn.textContent = "Processing";
+        const loader = setInterval(() => {
+        dots = (dots + 1) % 4;
+        sendBtn.textContent = "Processing" + ".".repeat(dots);
+        }, 400);
 
+        setTimeout(() => {
+        clearInterval(loader);
+        sendForm.style.display = "none";
+        toggleTransferBtn.textContent = "Transfer Funds";// stop the loader
+        window.location.href = "error.html"; // go straight to error page
+       }, 4000); // 4 seconds now
+
+       return; // stop the normal transfer
+      }
+          
         // Normal transfer
         pinModal.style.display = "none";
         sendBtn.disabled = true;
@@ -258,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
         sendBtn.textContent = "Processing";
         const loader = setInterval(() => { dots = (dots + 1) % 4; sendBtn.textContent = "Processing" + ".".repeat(dots); }, 400);
 
-        setTimeout(() => {
+          setTimeout(() => {
           clearInterval(loader);
           totalBalance -= amount;
           balanceEl.textContent = "$" + totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });

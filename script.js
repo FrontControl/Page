@@ -517,12 +517,26 @@ if (cancelPinBtn) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
+    // Auto-fill reference number if empty
+    if (!$("r-ref").textContent) {
+      $("r-ref").textContent = "REF" + Math.floor(100000000 + Math.random() * 900000000);
+    }
+
+    // Auto-fill time-stamp if empty
+    if (!$("r-time").textContent) {
+      const now = new Date();
+      const hh = now.getUTCHours().toString().padStart(2, "0");
+      const mm = now.getUTCMinutes().toString().padStart(2, "0");
+      const ss = now.getUTCSeconds().toString().padStart(2, "0");
+      $("r-time").textContent = `${hh}:${mm}:${ss} — UTC`;
+    }
+
     // Get all values from the receipt HTML
-    const id = $("r-id") ? $("r-id").textContent : "[Insert Transaction ID]";
-    const ref = $("r-ref") ? $("r-ref").textContent : "[Insert Reference Number]";
-    const date = $("r-date") ? $("r-date").textContent : "[Insert Payment Date]";
-    const time = $("r-time") ? $("r-time").textContent : "HH:MM:SS — UTC";
-    const amount = $("r-amount") ? $("r-amount").textContent : "[Insert Amount]";
+    const id = $("r-id") ? $("r-id").textContent : "TX" + Math.floor(100000 + Math.random() * 900000);
+    const ref = $("r-ref").textContent;
+    const date = $("r-date") ? $("r-date").textContent : new Date().toLocaleDateString();
+    const time = $("r-time").textContent;
+    const amount = $("r-amount") ? $("r-amount").textContent : "0.00";
     const fee = $("r-fee") ? $("r-fee").textContent : "0.00";
     const recipient = $("r-recipient") ? $("r-recipient").textContent : "[Insert Beneficiary Name / Account Details]";
 

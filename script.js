@@ -575,8 +575,22 @@
 
         // PDF styling
         let y = 20; // vertical position start
+        // Watermark
+        doc.setTextColor(220);
+        doc.setFontSize(40);
+        doc.text("CONFIDENTIAL", 105, 150, {
+        align: "center",
+        angle: 30
+       });
+        doc.setTextColor(0); // reset color
         doc.setFontSize(18);
-        doc.text("JPMORGAN CHASE BANK – PAYMENT RECEIPT", 105, y, { align: "center" });
+        doc.setFontSize(18);
+        doc.text("JPMORGAN CHASE BANK", 105, y, { align: "center" });
+        y += 8;
+
+        doc.setFontSize(14);
+        doc.text("PAYMENT RECEIPT", 105, y, { align: "center" });
+        y += 6;
         y += 10;
         doc.setLineWidth(0.5);
         doc.line(20, y, 190, y);
